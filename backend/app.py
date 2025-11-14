@@ -369,3 +369,8 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
+git add .
+git commit -m "Made the facial recognition model working, which marks attendance of students in attendance table, frontend not displaying attendance marked message"
+git push
+
