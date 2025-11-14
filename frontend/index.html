@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facial Attendance System</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Facial Recognition Attendance</h1>
+
+    <div id="container">
+
+        <!-- Webcam video -->
+        <video id="webcam" autoplay playsinline></video>
+
+        <!-- Subject Selection -->
+        <div id="controls">
+            <label for="subjectSelect">Select Subject:</label>
+            <select id="subjectSelect">
+                <!-- Example subjects - replace dynamically later -->
+                <option value="1">Maths</option>
+                <option value="2">Physics</option>
+                <option value="3">CSE101</option>
+            </select>
+
+            <button id="startBtn">Start Scanning</button>
+            <button id="stopBtn" disabled>Stop</button>
+        </div>
+
+        <!-- Results -->
+        <div id="result">
+            <h3>Result:</h3>
+            <p id="resultText">Waiting...</p>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
