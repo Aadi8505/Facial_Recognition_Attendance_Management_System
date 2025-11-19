@@ -530,4 +530,7 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
+# git add .
+# git commit -m ""
+# git push
 
