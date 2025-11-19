@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 30px; }
+        .box {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            width: 330px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Student Dashboard</h2>
+
+<div class="box">
+    <p><b>ID:</b> <span id="sid"></span></p>
+    <p><b>Name:</b> <span id="sname"></span></p>
+    <p><b>Section:</b> <span id="ssection"></span></p>
+    <p><b>Course:</b> <span id="scourse"></span></p>
+</div>
+
+<script>
+const backend = "http://127.0.0.1:5000";
+const url = new URL(window.location.href);
+const student_id = url.searchParams.get("id");
+
+async function loadStudent() {
+    const res = await fetch(`${backend}/student/${student_id}`);
+    const data = await res.json();
+
+    if (data.error) {
+        alert(data.error);
+        return;
+    }
+
+    document.getElementById("sid").innerText = data.id;
+    document.getElementById("sname").innerText = data.name;
+    document.getElementById("ssection").innerText = data.section;
+    document.getElementById("scourse").innerText = data.course;
+}
+
+window.onload = loadStudent;
+</script>
+
+</body>
+</html>

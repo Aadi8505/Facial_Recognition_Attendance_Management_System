@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        #studentTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        #studentTable th, #studentTable td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        #studentTable th {
+            background-color: #f4f4f4;
+        }
+        .btn {
+            padding: 6px 12px;
+            margin-right: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+        .present {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .absent {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Teacher Dashboard</h2>
+    <p id="subjectInfo">Loading subject...</p>
+
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Status Today</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Filled by JS -->
+        </tbody>
+    </table>
+
+<script>
+
+// -------- CONFIGURE THIS --------
+const url = new URL(window.location.href);
+const teacher_id = url.searchParams.get("id");
+const backend = "http://127.0.0.1:5000";
+
+// Load subject for this teacher
+async function loadSubject() {
+    const res = await fetch(`${backend}/teacher/${teacher_id}/subject`);
+    const data = await res.json();
+
+    if (data.error) {
+        document.getElementById("subjectInfo").innerHTML = data.error;
+        return;
+    }
+
+    window.subject_id = data.id;     // store globally
+    window.section = data.section;
+
+    document.getElementById("subjectInfo").innerHTML =
+        `Subject: <b>${data.subject_name}</b> (Section ${data.section})`;
+
+    loadStudents(); // next step
+}
+
+// Load students of section
+async function loadStudents() {
+    const res = await fetch(`${backend}/subject/${window.subject_id}/students`);
+    const data = await res.json();
+
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
+
+    data.forEach(stu => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${stu.id}</td>
+                <td>${stu.name}</td>
+                <td id="status-${stu.id}">Not Marked</td>
+                <td>
+                    <button class="btn present" onclick="mark(${stu.id}, 'Present')">Present</button>
+                    <button class="btn absent" onclick="mark(${stu.id}, 'Absent')">Absent</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+// Mark attendance manually
+async function mark(student_id, status) {
+    // auto-generate today's date
+    const today = new Date().toISOString().split("T")[0];
+
+    const body = {
+        student_id: student_id,
+        subject_id: window.subject_id,
+        status: status,
+        date: today   // REQUIRED by backend
+    };
+
+    const res = await fetch(`${backend}/mark_attendance`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+
+    // show correct message or error
+    if (data.error) {
+        alert("Error: " + data.error);
+    } else {
+        alert(data.message);
+        document.getElementById(`status-${student_id}`).innerHTML = status;
+    }
+}
+
+
+window.onload = loadSubject;
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body { font-family: Arial; padding: 40px; }
+        .box { width: 300px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 6px; }
+        input { width: 100%; padding: 10px; margin-top: 10px; }
+        button { width: 100%; padding: 10px; margin-top: 15px; background: black; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Login</h2>
+    <input type="number" id="userid" placeholder="Enter ID">
+    <input type="password" id="password" placeholder="Enter Password">
+    <button onclick="login()">Login</button>
+</div>
+
+<script>
+const backend = "http://127.0.0.1:5000";
+
+async function login() {
+    const id = document.getElementById("userid").value.trim();
+    const pw = document.getElementById("password").value.trim();
+
+    const res = await fetch(`${backend}/login`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ id: id, password: pw })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+        alert(data.error);
+        return;
+    }
+
+    if (data.role === "teacher") {
+        window.location.href = `teacher_dashboard.html?id=${data.id}`;
+    }
+    else if (data.role === "student") {
+        window.location.href = `student_dashboard.html?id=${data.id}`;
+    }
+}
+</script>
+
+</body>
+</html>
